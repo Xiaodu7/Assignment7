@@ -1,0 +1,8 @@
+__pycache__/
+.env
+*.pyc
+.git
+.gitignore
+
+# Generated QR codes
+qr_codes/
