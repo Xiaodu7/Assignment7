@@ -1,0 +1,31 @@
+name: Docker Build and Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t qr-code-generator-app .
+
+      - name: Run QR Code Generator
+        run: |
+          docker run --name qr-test \
+            qr-code-generator-app \
+            --url https://www.njit.edu
+
+      - name: Verify generated QR code
+        run: |
+          docker cp qr-test:/app/qr_codes ./qr_codes
+          ls -lh qr_codes
+          test -n "$(find qr_codes -type f -name 'QRCode_*.png' -print -quit)"
+          file qr_codes/*.png | grep "PNG image data"
